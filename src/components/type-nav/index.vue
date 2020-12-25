@@ -13,42 +13,28 @@
         <a href="###">秒杀</a>
       </nav>
       <div class="sort">
-        <div class="all-sort-list2" @click.prevent="toSearch">
-          <div
-            class="item bo"
-            v-for="(c1, index) in categoryList"
-            :key="c1.categoryId">
+        <div class="all-sort-list2" @click="toSearch">
+          <div class="item bo" v-for="(c1, index) in categoryList" :key="c1.id">
             <h3>
-              <a
-                href="javascript:"
-                :data-categoryName="c1.categoryName"
-                :data-category1Id="c1.categoryId"
-                >{{ c1.categoryName }}</a
-              >
+              <a 
+              :data-categoryName = c1.categoryName
+              :data-category1Id = c1.categoryId
+              href="javascript:">{{c1.categoryName}}</a>
             </h3>
             <div class="item-list clearfix">
               <div class="subitem">
-                <dl
-                  class="fore"
-                  v-for="c2 in c1.categoryChild"
-                  :key="c2.categoryId"
-                >
+                <dl class="fore"
+                  v-for="(c2, index) in c1.categoryChild" :key="c2.categoryId">
                   <dt>
-                    <a
-                      href="javascript:"
-                      :data-categoryName="c2.categoryName"
-                      :data-category1Id="c2.categoryId"
-                      >{{ c2.categoryName }}</a
-                    >
+                  <a href="javascript:"
+                  :data-categoryName = c2.categoryName
+                  :data-category2Id = c2.categoryId >{{c2.categoryName}}</a>
                   </dt>
                   <dd>
-                    <em v-for="c3 in c2.categoryChild" :key="c3.categoryId">
-                      <a
-                        href="javascript:"
-                        :data-categoryName="c3.categoryName"
-                        :data-category1Id="c3.categoryId"
-                        >{{ c3.categoryName }}</a
-                      >
+                    <em v-for="(c3, index) in c2.categoryChild" :key="c3.categoryId">
+                      <a href="javascript:"
+                      :data-categoryName = c3.categoryName
+                      :data-category3Id = c3.categoryId>{{c3.categoryName}}</a>
                     </em>
                   </dd>
                 </dl>
@@ -62,42 +48,47 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import {mapState} from 'vuex'
 export default {
-  name: "type-nav",
-
+  name: "TypeNav",
+  //todo  获取数据
   computed: {
     ...mapState({
-      categoryList: (state) => state.home.categoryList,
-    }),
+      categoryList:(state)=>state.home.categoryList
+    })
   },
   methods: {
-    toSearch(event) {
-      const target = event.target;
+    //todo 用来给search路由传参数的
+    toSearch(event){
+      console.log(event.target.dataset)
       const {
-        categoryname,
         category1id,
         category2id,
         category3id,
-      } = target.dataset;
-      if (categoryname) {
+        categoryname
+      } = event.target.dataset;
+      if(categoryname){
         const query = {
-          categoryName: categoryname,
+          categoryName : categoryname
         };
-        if (category1id) {
-          query.category1Id = category1id;
-        } else if (category2id) {
-          query.category2Id = category2id;
-        } else if (category3id) {
-          query.category3Id = category3id;
-        }
-
-        this.$router.push({
-          name: "search",
+        if(category1id){
+          query.category1Id = category1id
+        }else if(category2id){
+          query.category2Id = category2id
+        }else if(category3id){
+          query.category3Id = category3id
+        };
+        const location  = {
+          name:'search',
           query,
-        });
+          //todo 把自身的所有参数都带过去
+          params:this.$route.params
+        };
+        //todo 吧数据推送过
+        this.$router.push(location);
+        console.log(location)
       }
-    },
+    }
   },
 };
 </script>

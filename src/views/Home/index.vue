@@ -1,6 +1,6 @@
 <template>
   <div>
-    <typeNav/>
+    <TypeNav/>
     <listContaine />
     <todayRecommend />
     <Rank />
@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import typeNav from "@/components/type-nav";
+import TypeNav from "@/components/type-nav";
 import listContaine from "./list-container";
 import Brand from "./brand";
 import Floor from "./floor";
@@ -28,7 +28,7 @@ export default {
     Like,
     Rank,
     todayRecommend,
-    typeNav,
+    TypeNav,
   },
 };
 </script>

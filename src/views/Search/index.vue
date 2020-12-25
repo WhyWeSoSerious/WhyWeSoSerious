@@ -1,14 +1,19 @@
 <template>
   <div>
-    <h3>{{$route.params.keyword}}</h3>
-      <h3>{{$route.query.keyword2}}</h3>
+    <TypeNav/>
+    <h3>{{$route.params}}</h3>
+      <h3>{{$route.query}}</h3>
 
   </div>
 </template>
 
 <script>
+import TypeNav from "@/components/type-nav";
 export default {
   name: 'search',
+  components: {
+    TypeNav,
+  }
 }
 </script>
 

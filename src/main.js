@@ -3,9 +3,9 @@ import App from './App'
 import router from './router'
 import store from './store'
 // @ts-ignore
-import typeNav from './components/type-nav'
+import TypeNav from './components/type-nav'
 Vue.config.productionTip = false
-Vue.component(typeNav)
+Vue.component(TypeNav)
 new Vue({
   render: h => h(App),
   router, store

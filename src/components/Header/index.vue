@@ -63,7 +63,7 @@ export default {
         this.$router.push({
         name:"search",
         params: { keyword: this.keyword },
-        query: { keyword2: this.keyword },
+        query: this.$route.query
       })
      }else{
        alert('请输入有效的')
