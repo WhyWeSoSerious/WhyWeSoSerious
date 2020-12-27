@@ -1,7 +1,59 @@
 <template>
   <div class="type-nav">
     <div class="container">
-      <h2 class="all">全部商品分类</h2>
+      <div @mouseleave="hideFirst" @mouseenter="showFirst">
+        <h2 class="all">全部商品分类</h2>
+        <transition name="slide">
+          <div class="sort" v-show="isShowFirst">
+            <div class="all-sort-list2" @click="toSearch">
+              <div
+                class="item"
+                v-for="(c1, index) in categoryList"
+                :key="c1.categoryId"
+                :class="{ active: currentIndex === index }"
+                @mouseenter="showSubList(index)"
+              >
+                <h3>
+                  <a
+                    href="javascript:"
+                    :data-categoryName="c1.categoryName"
+                    :data-category1Id="c1.categoryId"
+                    >{{ c1.categoryName }}</a
+                  >
+                </h3>
+                <div class="item-list clearfix">
+                  <div class="subitem">
+                    <dl
+                      class="fore"
+                      v-for="c2 in c1.categoryChild"
+                      :key="c2.categoryId"
+                    >
+                      <dt>
+                        <a
+                          href="javascript:"
+                          :data-categoryName="c2.categoryName"
+                          :data-category2Id="c2.categoryId"
+                          >{{ c2.categoryName }}</a
+                        >
+                      </dt>
+                      <dd>
+                        <em v-for="c3 in c2.categoryChild" :key="c3.categoryId">
+                          <a
+                            href="javascript:"
+                            :data-categoryName="c3.categoryName"
+                            :data-category3Id="c3.categoryId"
+                            >{{ c3.categoryName }}</a
+                          >
+                        </em>
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </transition>
+      </div>
       <nav class="nav">
         <a href="###">服装城</a>
         <a href="###">美妆馆</a>
@@ -12,83 +64,86 @@
         <a href="###">有趣</a>
         <a href="###">秒杀</a>
       </nav>
-      <div class="sort">
-        <div class="all-sort-list2" @click="toSearch">
-          <div class="item bo" v-for="(c1, index) in categoryList" :key="c1.id">
-            <h3>
-              <a 
-              :data-categoryName = c1.categoryName
-              :data-category1Id = c1.categoryId
-              href="javascript:">{{c1.categoryName}}</a>
-            </h3>
-            <div class="item-list clearfix">
-              <div class="subitem">
-                <dl class="fore"
-                  v-for="(c2, index) in c1.categoryChild" :key="c2.categoryId">
-                  <dt>
-                  <a href="javascript:"
-                  :data-categoryName = c2.categoryName
-                  :data-category2Id = c2.categoryId >{{c2.categoryName}}</a>
-                  </dt>
-                  <dd>
-                    <em v-for="(c3, index) in c2.categoryChild" :key="c3.categoryId">
-                      <a href="javascript:"
-                      :data-categoryName = c3.categoryName
-                      :data-category3Id = c3.categoryId>{{c3.categoryName}}</a>
-                    </em>
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import { mapState } from "vuex";
+import throttle from "lodash/throttle";
 export default {
   name: "TypeNav",
   //todo  获取数据
   computed: {
     ...mapState({
-      categoryList:(state)=>state.home.categoryList
-    })
+      categoryList: (state) => state.home.categoryList,
+    }),
+  },
+  data() {
+    const path = this.$route.path;
+    return {
+      isShowFirst: path === "/",
+      currentIndex: -2,
+    };
   },
   methods: {
     //todo 用来给search路由传参数的
-    toSearch(event){
-      console.log(event.target.dataset)
+    toSearch(event) {
+      console.log(event.target.dataset);
       const {
         category1id,
         category2id,
         category3id,
-        categoryname
+        categoryname,
       } = event.target.dataset;
-      if(categoryname){
+      if (categoryname) {
         const query = {
-          categoryName : categoryname
+          categoryName: categoryname,
         };
-        if(category1id){
-          query.category1Id = category1id
-        }else if(category2id){
-          query.category2Id = category2id
-        }else if(category3id){
-          query.category3Id = category3id
-        };
-        const location  = {
-          name:'search',
+        if (category1id) {
+          query.category1Id = category1id;
+        } else if (category2id) {
+          query.category2Id = category2id;
+        } else if (category3id) {
+          query.category3Id = category3id;
+        }
+        const location = {
+          name: "search",
           query,
           //todo 把自身的所有参数都带过去
-          params:this.$route.params
+          params: this.$route.params,
         };
-        //todo 吧数据推送过
-        this.$router.push(location);
-        console.log(location)
+        if (this.$route.name === "search") {
+          // 当前是搜索
+          this.$router.replace(location);
+        } else {
+          this.$router.push(location);
+        }
+       
       }
-    }
+      // 隐藏一级列表
+      this.hideFirst();
+    },
+    hideFirst() {
+      
+      this.currentIndex = -2;
+     
+      if (this.$route.path !== "/") {
+        this.isShowFirst = false;
+      }
+    },
+    showFirst() {
+     
+      this.currentIndex = -1;
+      
+      this.isShowFirst = true;
+    },
+    showSubList: throttle(function (index) {
+     
+      if (this.currentIndex !== -2) {
+        this.currentIndex = index;
+      }
+    }, 500),
   },
 };
 </script>
@@ -133,6 +188,18 @@ export default {
       position: absolute;
       background: #fafafa;
       z-index: 999;
+
+      /* 指定过渡的样式 */
+      &.slide-enter-active,
+      &.slide-leave-active {
+        transition: all 0.3s;
+      }
+      /* 指定隐藏时的样式 */
+      &.slide-enter,
+      &.slide-leave-to {
+        opacity: 0;
+        height: 0;
+      }
 
       .all-sort-list2 {
         .item {
@@ -203,7 +270,8 @@ export default {
             }
           }
 
-          &:hover {
+          &.active {
+            background: #ccc;
             .item-list {
               display: block;
             }

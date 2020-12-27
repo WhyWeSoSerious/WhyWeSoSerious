@@ -3,6 +3,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import home from './modules/home'
 import user from './modules/user'
+import search from './modules/search'
 //?注册组件
 Vue.use(Vuex);
 const mutations = {}
@@ -13,7 +14,7 @@ export default new Vuex.Store({
     actions,
     getters,
     modules: {
-        home,user
+        home,user,search
     }
     
 })
